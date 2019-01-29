@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.mapper.CommentMapper" >
+  <resultMap id="BaseResultMap" type="com.neusoft.domain.Comment" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="topic_id" property="topicId" jdbcType="INTEGER" />
+    <result column="comment_content" property="commentContent" jdbcType="VARCHAR" />
+    <result column="like_num" property="likeNum" jdbcType="INTEGER" />
+    <result column="is_choose" property="isChoose" jdbcType="INTEGER" />
+    <result column="comment_time" property="commentTime" jdbcType="TIMESTAMP" />
+    <result column="isMessage" property="isMessage" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, user_id, topic_id, comment_content, like_num, is_choose, comment_time,isMessage
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from tab_comment
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from tab_comment
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.neusoft.domain.Comment" >
+    insert into tab_comment (id, user_id, topic_id, 
+      comment_content, like_num, is_choose, 
+      comment_time,isMessage)
+    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{topicId,jdbcType=INTEGER}, 
+      #{commentContent,jdbcType=VARCHAR}, #{likeNum,jdbcType=INTEGER}, #{isChoose,jdbcType=INTEGER}, 
+      #{commentTime,jdbcType=TIMESTAMP},#{isMessage})
+  </insert>
+  <insert id="insertSelective" parameterType="com.neusoft.domain.Comment" >
+    insert into tab_comment
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="topicId != null" >
+        topic_id,
+      </if>
+      <if test="commentContent != null" >
+        comment_content,
+      </if>
+      <if test="likeNum != null" >
+        like_num,
+      </if>
+      <if test="isChoose != null" >
+        is_choose,
+      </if>
+      <if test="commentTime != null" >
+        comment_time,
+      </if>
+      <if test="isMessage != null" >
+        isMessage,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="topicId != null" >
+        #{topicId,jdbcType=INTEGER},
+      </if>
+      <if test="commentContent != null" >
+        #{commentContent,jdbcType=VARCHAR},
+      </if>
+      <if test="likeNum != null" >
+        #{likeNum,jdbcType=INTEGER},
+      </if>
+      <if test="isChoose != null" >
+        #{isChoose,jdbcType=INTEGER},
+      </if>
+      <if test="commentTime != null" >
+        #{commentTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isMessage != null" >
+        #{isMessage},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.neusoft.domain.Comment" >
+    update tab_comment
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="topicId != null" >
+        topic_id = #{topicId,jdbcType=INTEGER},
+      </if>
+      <if test="commentContent != null" >
+        comment_content = #{commentContent,jdbcType=VARCHAR},
+      </if>
+      <if test="likeNum != null" >
+        like_num = #{likeNum,jdbcType=INTEGER},
+      </if>
+      <if test="isChoose != null" >
+        is_choose = #{isChoose,jdbcType=INTEGER},
+      </if>
+      <if test="commentTime != null" >
+        comment_time = #{commentTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isMessage != null" >
+        isMessage = #{isMessage},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.neusoft.domain.Comment" >
+    update tab_comment
+    set user_id = #{userId,jdbcType=INTEGER},
+      topic_id = #{topicId,jdbcType=INTEGER},
+      comment_content = #{commentContent,jdbcType=VARCHAR},
+      like_num = #{likeNum,jdbcType=INTEGER},
+      is_choose = #{isChoose,jdbcType=INTEGER},
+      comment_time = #{commentTime,jdbcType=TIMESTAMP},
+      isMessage = #{isMessage}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="selectByUseridAndTopicid" parameterType="int" resultType="map">
+      select tab_comment.user_id,tab_comment.topic_id,tab_comment.comment_time,tab_comment.comment_content,tab_topic.title from tab_comment
+      join tab_topic on tab_comment.topic_id = tab_topic.id
+      where tab_comment.user_id=#{value}
+      ORDER BY tab_comment.comment_time DESC
+  </select>
+
+  <select id="selectForMessage" parameterType="int" resultType="map">
+    select tab_user.nickname,tab_topic.title,tab_comment.comment_time from tab_comment
+    join tab_user on tab_comment.user_id=tab_user.id
+    join tab_topic on tab_comment.topic_id=tab_topic.id
+    where tab_topic.userid=#{value}
+  </select>
+
+  <select id="selectForIndexHuitie" resultType="map">
+    select COUNT(*) as count,tab_user.nickname,tab_user.pic_path,tab_user.id from tab_comment
+    join tab_user on tab_comment.user_id=tab_user.id
+    GROUP BY tab_comment.user_id
+    ORDER BY count DESC
+    limit 0,12
+  </select>
+
+  <select id="selectForDetail" parameterType="int" resultType="map">
+    select * from tab_comment
+    join tab_user on tab_user.id=tab_comment.user_id
+    join tab_topic on tab_topic.id=tab_comment.topic_id
+    where tab_comment.topic_id=#{value}
+    ORDER BY  tab_comment.is_choose desc,tab_comment.like_num desc,tab_comment.comment_time
+  </select>
+
+  <select id="getTotal" parameterType="int" resultType="int">
+    select count(*) from tab_comment
+    join tab_topic on tab_comment.topic_id = tab_topic.id
+    where tab_comment.user_id=#{value}
+    ORDER BY tab_comment.comment_time DESC
+  </select>
+
+  <select id="getPageInfo" parameterType="com.neusoft.response.PageInfo" resultType="map">
+    select tab_comment.topic_id,tab_comment.comment_time,tab_comment.comment_content,tab_topic.title from tab_comment
+    join tab_topic on tab_comment.topic_id = tab_topic.id
+    where tab_comment.user_id=#{userId}
+    ORDER BY tab_comment.comment_time DESC
+    limit #{pageStart},#{pageSize}
+  </select>
+
+  <select id="getForMessege" parameterType="map" resultType="map">
+SELECT tab_comment.id,tab_comment.topic_id,tab_user.nickname,tab_topic.title,tab_topic_category.name,tab_comment.comment_time,tab_comment.isMessage
+from tab_comment
+join tab_topic on tab_comment.topic_id=tab_topic.id
+join tab_user on tab_user.id=tab_comment.user_id
+join tab_topic_category on tab_topic_category.id=tab_topic.topic_category_id
+where (tab_topic.userid=#{userId} and tab_user.id!=#{userId} and tab_comment.isMessage=0)
+or (tab_comment.comment_content like '%@${userNickname} %' and tab_user.id!=#{userId} and tab_comment.isMessage=0)
+ORDER BY tab_comment.comment_time desc
+  </select>
+
+  <select id="getTotalForMessageFenye" parameterType="com.neusoft.response.PageInfo" resultType="int">
+SELECT count(*)
+from tab_comment
+join tab_topic on tab_comment.topic_id=tab_topic.id
+join tab_user on tab_user.id=tab_comment.user_id
+join tab_topic_category on tab_topic_category.id=tab_topic.topic_category_id
+where (tab_topic.userid=#{userId} and tab_user.id!=#{userId} and tab_comment.isMessage!=1)
+or (tab_comment.comment_content like '%@${nickname} %' and tab_user.id!=#{userId} and tab_comment.isMessage!=1)
+ORDER BY tab_comment.comment_time desc
+  </select>
+
+  <select id="getDataForMessageFenye" parameterType="com.neusoft.response.PageInfo" resultType="map">
+SELECT tab_comment.id,tab_comment.topic_id,tab_user.nickname,tab_topic.title,tab_topic_category.name,tab_comment.comment_time,tab_comment.isMessage
+from tab_comment
+join tab_topic on tab_comment.topic_id=tab_topic.id
+join tab_user on tab_user.id=tab_comment.user_id
+join tab_topic_category on tab_topic_category.id=tab_topic.topic_category_id
+where (tab_topic.userid=#{userId} and tab_user.id!=#{userId} and tab_comment.isMessage!=1)
+or (tab_comment.comment_content like '%@${nickname} %' and tab_user.id!=#{userId} and tab_comment.isMessage!=1)
+ORDER BY tab_comment.comment_time desc
+limit #{pageStart},#{pageSize}
+  </select>
+
+  <select id="getWeiduMessageCount" parameterType="map" resultType="int">
+SELECT COUNT(*)
+from tab_comment
+join tab_topic on tab_comment.topic_id=tab_topic.id
+join tab_user on tab_user.id=tab_comment.user_id
+join tab_topic_category on tab_topic_category.id=tab_topic.topic_category_id
+where (tab_topic.userid=#{userId} and tab_user.id!=#{userId} and tab_comment.isMessage=0)
+or (tab_comment.comment_content like '%@${userNickname} %' and tab_user.id!=#{userId} and tab_comment.isMessage=0)
+ORDER BY tab_comment.comment_time desc
+  </select>
+
+  <select id="getMessageForDelete" parameterType="map" resultType="map">
+SELECT tab_comment.id,tab_comment.topic_id,tab_user.nickname,tab_topic.title,tab_topic_category.name,tab_comment.comment_time,tab_comment.isMessage
+from tab_comment
+join tab_topic on tab_comment.topic_id=tab_topic.id
+join tab_user on tab_user.id=tab_comment.user_id
+join tab_topic_category on tab_topic_category.id=tab_topic.topic_category_id
+where (tab_topic.userid=#{userId} and tab_user.id!=#{userId} and tab_comment.isMessage!=1)
+or (tab_comment.comment_content like '%@${userNickname} %' and tab_user.id!=#{userId} and tab_comment.isMessage!=1)
+ORDER BY tab_comment.comment_time desc
+  </select>
+</mapper>
